@@ -7,23 +7,38 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { generateImage } from "@/ai/flows/generate-image-flow";
 import { useEffect, useState } from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export default function Home() {
-  const [imageDataUri, setImageDataUri] = useState<string>("https://placehold.co/500x550.png");
+  const [imageUris, setImageUris] = useState<string[]>([
+    "https://placehold.co/500x550.png",
+    "https://placehold.co/500x550.png",
+    "https://placehold.co/500x550.png",
+  ]);
 
   useEffect(() => {
-    async function fetchImage() {
+    async function fetchImages() {
+      const prompts = [
+        "A vibrant and professional-looking smartphone screen displaying a mobile e-commerce app. The app shows a grid of colorful, handmade Ghanaian products like Kente cloth and beaded jewelry. The app has a clean, modern design with purple and blue accents. The phone is held by a person, with a blurred background of a bustling Ghanaian market, conveying a sense of local entrepreneurship powered by technology.",
+        "A smartphone screen showcasing an elegant, locally-made fashion item from a Ghanaian designer on the BazaarBot app. The product is a colorful dress with intricate patterns. The background is a minimalist, well-lit studio, making the product pop.",
+        "A smartphone screen displaying a delicious plate of Jollof rice with chicken from a local Ghanaian food vendor on the BazaarBot app. The photo is vibrant and appetizing, with a blurred background of a cozy restaurant setting."
+      ];
       try {
-        const result = await generateImage({
-          prompt: "A vibrant and professional-looking smartphone screen displaying a mobile e-commerce app. The app shows a grid of colorful, handmade Ghanaian products like Kente cloth and beaded jewelry. The app has a clean, modern design with purple and blue accents. The phone is held by a person, with a blurred background of a bustling Ghanaian market, conveying a sense of local entrepreneurship powered by technology."
-        });
-        setImageDataUri(result.imageDataUri);
+        const imagePromises = prompts.map(prompt => generateImage({ prompt }));
+        const results = await Promise.all(imagePromises);
+        setImageUris(results.map(result => result.imageDataUri));
       } catch (error) {
-        console.error("AI image generation failed. This may be due to a missing GOOGLE_API_KEY. Using a placeholder. Error:", error);
-        // The placeholder is already set, so no need to setState here again.
+        console.error("AI image generation failed. This may be due to a missing GOOGLE_API_KEY. Using placeholders. Error:", error);
+        // Placeholders are already set, no need to do anything.
       }
     }
-    fetchImage();
+    fetchImages();
   }, []);
 
 
@@ -72,17 +87,25 @@ export default function Home() {
                 </Button>
               </div>
             </div>
-            <div className="relative animate-fade-in-up [animation-delay:0.2s] [perspective:1000px]">
-                <div className="relative transition-transform duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(-10deg)_scale(1.05)]">
-                    <Image
-                      src={imageDataUri}
-                      alt="A phone showing a BazaarBot store"
-                      width={500}
-                      height={550}
-                      className="rounded-xl shadow-2xl object-cover"
-                      data-ai-hint="phone store"
-                    />
-                </div>
+            <div className="relative animate-fade-in-up [animation-delay:0.2s] p-4">
+                <Carousel className="w-full max-w-md mx-auto" opts={{ loop: true }}>
+                  <CarouselContent>
+                    {imageUris.map((uri, index) => (
+                      <CarouselItem key={index}>
+                          <Image
+                            src={uri}
+                            alt={`BazaarBot store showcase ${index + 1}`}
+                            width={500}
+                            height={550}
+                            className="rounded-xl shadow-2xl object-cover w-full h-auto"
+                            data-ai-hint="phone store app"
+                          />
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
             </div>
           </div>
         </section>
