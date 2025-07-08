@@ -6,7 +6,7 @@ import { Bot, Link as LinkIcon, MessageSquarePlus, Store, Sparkles, Zap, Shoppin
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { generateImage } from "@/ai/flows/generate-image-flow";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -14,6 +14,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 export default function Home() {
   const [imageUris, setImageUris] = useState<string[]>([
@@ -21,6 +22,10 @@ export default function Home() {
     "https://placehold.co/500x550.png",
     "https://placehold.co/500x550.png",
   ]);
+
+  const plugin = React.useRef(
+    Autoplay({ delay: 3000, stopOnInteraction: true })
+  );
 
   useEffect(() => {
     async function fetchImages() {
@@ -88,7 +93,11 @@ export default function Home() {
               </div>
             </div>
             <div className="relative animate-fade-in-up [animation-delay:0.2s] p-4">
-                <Carousel className="w-full max-w-md mx-auto" opts={{ loop: true }}>
+                <Carousel
+                  plugins={[plugin.current]}
+                  className="w-full max-w-md mx-auto"
+                  opts={{ loop: true }}
+                >
                   <CarouselContent>
                     {imageUris.map((uri, index) => (
                       <CarouselItem key={index}>
