@@ -1,6 +1,6 @@
 import type { Product } from '@/types';
 
-const products: Product[] = [
+let products: Product[] = [
   {
     id: "prod_001",
     image: "https://placehold.co/600x600.png",
@@ -63,4 +63,15 @@ export async function getProductsBySeller(sellerId: string): Promise<Product[]> 
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 500));
   return products.filter(product => product.sellerId === sellerId);
+}
+
+export async function addProduct(productData: Omit<Product, 'id'>): Promise<Product> {
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  const newProduct: Product = {
+    ...productData,
+    id: `prod_${String(products.length + 1).padStart(3, '0')}`,
+  };
+  products.unshift(newProduct);
+  return newProduct;
 }
