@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 240 67% 97%;
+    --background: 277 87% 97%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -84,7 +84,7 @@
     background-image: linear-gradient(
       -45deg,
       hsl(var(--background)),
-      hsl(240 60% 98%),
+      hsl(277 80% 98%),
       hsl(var(--background))
     );
     background-size: 400% 400%;

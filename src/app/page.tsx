@@ -18,7 +18,6 @@ export default async function Home() {
     imageDataUri = "https://placehold.co/500x550.png";
   }
 
-
   return (
     <div className="flex flex-col min-h-screen text-foreground">
       <header className="py-4 px-4 md:px-6 sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
@@ -63,7 +62,7 @@ export default async function Home() {
               </div>
             </div>
             <div className="relative animate-fade-in-up [animation-delay:0.2s] [perspective:1000px]">
-                <div className="relative animate-float transition-transform duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(-10deg)_scale(1.05)]">
+                <div className="relative transition-transform duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(-10deg)_scale(1.05)]">
                     <Image
                       src={imageDataUri}
                       alt="A phone showing a BazaarBot store"
