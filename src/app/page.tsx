@@ -10,18 +10,17 @@ export default async function Home() {
 
   try {
     const result = await generateImage({
-      prompt: "A vibrant and professional-looking smartphone screen displaying a mobile e-commerce app. The app shows a grid of colorful, handmade Ghanaian products like Kente cloth and beaded jewelry. The app has a clean, modern design with purple and orange accents. The phone is held by a person, with a blurred background of a bustling Ghanaian market, conveying a sense of local entrepreneurship powered by technology."
+      prompt: "A vibrant and professional-looking smartphone screen displaying a mobile e-commerce app. The app shows a grid of colorful, handmade Ghanaian products like Kente cloth and beaded jewelry. The app has a clean, modern design with purple and blue accents. The phone is held by a person, with a blurred background of a bustling Ghanaian market, conveying a sense of local entrepreneurship powered by technology."
     });
     imageDataUri = result.imageDataUri;
   } catch (error) {
     console.error("AI image generation failed. This may be due to a missing GOOGLE_API_KEY. Using a placeholder. Error:", error);
-    // Use a placeholder if the image generation fails
     imageDataUri = "https://placehold.co/500x550.png";
   }
 
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
+    <div className="flex flex-col min-h-screen text-foreground">
       <header className="py-4 px-4 md:px-6 sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
         <div className="container mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
