@@ -50,7 +50,7 @@ export default function Home() {
             </div>
             <div className="relative animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                 <Image
-                  src="https://images.unsplash.com/photo-1586953208448-3151cf797d50?w=500&h=550&fit=crop&q=80"
+                  src="https://images.unsplash.com/photo-1586953208448-3151cf797d50"
                   alt="A phone showing a BazaarBot store"
                   width={500}
                   height={550}
