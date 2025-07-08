@@ -1,34 +1,14 @@
 import type { Product } from '@/types';
 import * as admin from 'firebase-admin';
-
-// This function initializes Firebase Admin if it hasn't been already
-// and returns the Firestore instance.
-function getDb() {
-  if (!admin.apps.length) {
-    try {
-      const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
-      if (!serviceAccountBase64) {
-        throw new Error('FIREBASE_SERVICE_ACCOUNT_BASE64 is not set in environment variables.');
-      }
-      const serviceAccountJson = Buffer.from(serviceAccountBase64, 'base64').toString('utf-8');
-      const credentials = JSON.parse(serviceAccountJson);
-
-      admin.initializeApp({
-        credential: admin.credential.cert(credentials),
-      });
-    } catch (error) {
-      console.error('Firebase Admin Initialization Error:', error);
-      // Re-throw to make it clear that initialization failed.
-      throw new Error('Could not initialize Firebase Admin SDK. Please check your service account credentials.');
-    }
-  }
-  return admin.firestore();
-}
-
+import { db } from '@/lib/firebase';
 
 export async function getProductsBySeller(sellerId: string): Promise<Product[]> {
+  if (!db) {
+    console.log("Firestore not initialized, returning empty array. Check Firebase credentials.");
+    return [];
+  }
+
   try {
-    const db = getDb();
     const productsCollection = db.collection('products');
     const snapshot = await productsCollection
       .where('sellerId', '==', sellerId)
@@ -58,8 +38,12 @@ export async function getProductsBySeller(sellerId: string): Promise<Product[]> 
 }
 
 export async function addProduct(productData: Omit<Product, 'id' | 'createdAt'>): Promise<Product> {
+  if (!db) {
+    console.error("Firestore not initialized, cannot add product. Check Firebase credentials.");
+    throw new Error("Failed to add product to the database because it is not connected.");
+  }
+  
   try {
-    const db = getDb();
     const productsCollection = db.collection('products');
 
     const newProductDoc = {
