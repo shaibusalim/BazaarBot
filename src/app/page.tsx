@@ -31,6 +31,11 @@ export default function Home() {
                   <Store className="mr-2" /> View Demo Store
                 </Link>
               </Button>
+              <Button size="lg" variant="secondary" asChild>
+                <Link href="/tester">
+                  Test API Endpoint
+                </Link>
+              </Button>
             </div>
           </div>
         </section>
