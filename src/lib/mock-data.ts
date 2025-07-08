@@ -1,77 +1,75 @@
 import type { Product } from '@/types';
+import * as admin from 'firebase-admin';
 
-let products: Product[] = [
-  {
-    id: "prod_001",
-    image: "https://placehold.co/600x600.png",
-    price: "₵150",
-    description: "Men's Classic Leather Sneakers",
-    sellerId: "233123456789",
-  },
-  {
-    id: "prod_002",
-    image: "https://placehold.co/600x600.png",
-    price: "₵250",
-    description: "Wireless Noise-Cancelling Headphones",
-    sellerId: "233123456789",
-  },
-  {
-    id: "prod_003",
-    image: "https://placehold.co/600x600.png",
-    price: "₵80",
-    description: "Handwoven Kente Cloth Scarf",
-    sellerId: "233123456789",
-  },
-  {
-    id: "prod_004",
-    image: "https://placehold.co/600x600.png",
-    price: "₵450",
-    description: "Smart Fitness Watch with GPS",
-    sellerId: "233123456789",
-  },
-  {
-    id: "prod_005",
-    image: "https://placehold.co/600x600.png",
-    price: "₵120",
-    description: "Organic Shea Butter Body Cream",
-    sellerId: "233123456789",
-  },
-  {
-    id: "prod_006",
-    image: "https://placehold.co/600x600.png",
-    price: "₵300",
-    description: "Portable Bluetooth Speaker",
-    sellerId: "233123456789",
-  },
-  {
-    id: "prod_007",
-    image: "https://placehold.co/600x600.png",
-    price: "₵95",
-    description: "Stylish Ankara Print Backpack",
-    sellerId: "233123456789",
-  },
-  {
-    id: "prod_008",
-    image: "https://placehold.co/600x600.png",
-    price: "₵220",
-    description: "Modern Stainless Steel Water Bottle",
-    sellerId: "233123456789",
-  },
-];
+// Initialize Firebase Admin SDK
+// This pattern ensures it's only initialized once.
+if (!admin.apps.length) {
+  try {
+    const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+    if (!serviceAccountBase64) {
+      throw new Error('Firebase service account key not found in environment variables.');
+    }
+    const serviceAccountJson = Buffer.from(serviceAccountBase64, 'base64').toString('utf-8');
+    const credentials = JSON.parse(serviceAccountJson);
 
-export async function getProductsBySeller(sellerId: string): Promise<Product[]> {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return products.filter(product => product.sellerId === sellerId);
+    admin.initializeApp({
+      credential: admin.credential.cert(credentials),
+    });
+  } catch (error) {
+    console.error('Firebase Admin Initialization Error:', error);
+  }
 }
 
-export async function addProduct(productData: Omit<Product, 'id'>): Promise<Product> {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  const newProduct: Product = {
-    ...productData,
-    id: `prod_${String(products.length + 1).padStart(3, '0')}`,
-  };
-  products.unshift(newProduct);
-  return newProduct;
+const db = admin.firestore();
+const productsCollection = db.collection('products');
+
+export async function getProductsBySeller(sellerId: string): Promise<Product[]> {
+  try {
+    const snapshot = await productsCollection
+      .where('sellerId', '==', sellerId)
+      .orderBy('createdAt', 'desc')
+      .get();
+      
+    if (snapshot.empty) {
+      return [];
+    }
+
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        sellerId: data.sellerId,
+        image: data.image,
+        price: data.price,
+        description: data.description,
+        createdAt: data.createdAt.toDate(),
+      };
+    }) as Product[];
+  } catch (error) {
+    console.error("Error getting products by seller:", error);
+    return [];
+  }
+}
+
+export async function addProduct(productData: Omit<Product, 'id' | 'createdAt'>): Promise<Product> {
+  try {
+    const newProductDoc = {
+      ...productData,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+    const docRef = await productsCollection.add(newProductDoc);
+
+    const doc = await docRef.get();
+    const data = doc.data();
+
+    return {
+      id: doc.id,
+      ...productData,
+      createdAt: data?.createdAt.toDate(),
+    } as Product;
+    
+  } catch (error) {
+    console.error("Error adding product:", error);
+    throw new Error("Failed to add product to the database.");
+  }
 }

@@ -4,4 +4,5 @@ export interface Product {
   price: string;
   description: string;
   sellerId: string;
+  createdAt: any;
 }
