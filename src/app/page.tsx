@@ -50,11 +50,11 @@ export default function Home() {
             </div>
             <div className="relative animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                 <Image
-                  src="https://placehold.co/500x550.png"
+                  src="https://images.unsplash.com/photo-1586953208448-3151cf797d50?w=500&h=550&fit=crop&q=80"
                   alt="A phone showing a BazaarBot store"
                   width={500}
                   height={550}
-                  className="rounded-xl shadow-2xl transform transition-transform duration-500 hover:scale-105"
+                  className="rounded-xl shadow-2xl transform transition-transform duration-500 hover:scale-105 object-cover"
                   data-ai-hint="phone store"
                 />
             </div>
