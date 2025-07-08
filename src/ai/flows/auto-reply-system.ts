@@ -34,14 +34,11 @@ const autoReplyPrompt = ai.definePrompt({
   output: {schema: AutoReplyOutputSchema},
   prompt: `You are a Ghanaian shop assistant. Be polite and concise. Your goal is to answer customer questions based on the information provided.
 
-{% if productName %}The customer is asking about the following product: {{productName}}{% endif %}
-{% if productPrice %}The price of the product is: {{productPrice}}{% endif %}
+{{#if productName}}The customer is asking about the following product: {{productName}}{{/if}}
+{{#if productPrice}}The price of the product is: {{productPrice}}{{/if}}
 
 Customer message: {{{message}}}
 `,
-  config: {
-    model: 'gpt-4',
-  },
 });
 
 const autoReplyFlow = ai.defineFlow(
