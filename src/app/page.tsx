@@ -128,26 +128,26 @@ export default function Home() {
               <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">From your phone to a full-fledged store in three simple steps.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center bg-card p-8 rounded-2xl shadow-lg transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit mb-6">
+              <div className="text-center bg-primary text-primary-foreground p-8 rounded-2xl shadow-lg shadow-primary/40 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/60 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                <div className="mx-auto bg-primary-foreground/10 text-primary-foreground p-4 rounded-full w-fit mb-6">
                   <MessageSquarePlus size={32} />
                 </div>
                 <h4 className="text-xl font-semibold">1. Send a Message</h4>
-                <p className="text-muted-foreground mt-2">Snap a photo, add a price & description, and send it to our WhatsApp number. That's it.</p>
+                <p className="text-primary-foreground/80 mt-2">Snap a photo, add a price & description, and send it to our WhatsApp number. That's it.</p>
               </div>
-              <div className="text-center bg-card p-8 rounded-2xl shadow-lg transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-                <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit mb-6">
+              <div className="text-center bg-primary text-primary-foreground p-8 rounded-2xl shadow-lg shadow-primary/40 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/60 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                <div className="mx-auto bg-primary-foreground/10 text-primary-foreground p-4 rounded-full w-fit mb-6">
                   <LinkIcon size={32} />
                 </div>
                 <h4 className="text-xl font-semibold">2. Get Your Link</h4>
-                <p className="text-muted-foreground mt-2">We instantly create a beautiful, public store page for you and send you the link.</p>
+                <p className="text-primary-foreground/80 mt-2">We instantly create a beautiful, public store page for you and send you the link.</p>
               </div>
-              <div className="text-center bg-card p-8 rounded-2xl shadow-lg transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-                <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit mb-6">
+              <div className="text-center bg-primary text-primary-foreground p-8 rounded-2xl shadow-lg shadow-primary/40 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/60 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+                <div className="mx-auto bg-primary-foreground/10 text-primary-foreground p-4 rounded-full w-fit mb-6">
                   <Share2 size={32} />
                 </div>
                 <h4 className="text-xl font-semibold">3. Share & Sell</h4>
-                <p className="text-muted-foreground mt-2">Share your store link with customers on WhatsApp, social media, or anywhere you like!</p>
+                <p className="text-primary-foreground/80 mt-2">Share your store link with customers on WhatsApp, social media, or anywhere you like!</p>
               </div>
             </div>
           </div>
@@ -162,47 +162,47 @@ export default function Home() {
                     <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">Powerful features designed to make selling simple and fast.</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 [perspective:1000px]">
-                    <Card className="shadow-lg hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(-15deg)] animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+                    <Card className="bg-primary text-primary-foreground shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/60 transition-all duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(-15deg)] animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
                         <CardHeader className="items-center text-center">
-                            <div className="p-3 bg-accent/10 rounded-full mb-4">
+                             <div className="p-3 bg-primary-foreground/10 rounded-full mb-4">
                                 <Zap className="h-7 w-7 text-accent" />
                             </div>
                             <CardTitle>Instant Setup</CardTitle>
                         </CardHeader>
-                        <CardContent className="text-center text-muted-foreground">
+                        <CardContent className="text-center text-primary-foreground/80">
                             No registration. Your WhatsApp number is your account.
                         </CardContent>
                     </Card>
-                    <Card className="shadow-lg hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(-15deg)] animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+                    <Card className="bg-primary text-primary-foreground shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/60 transition-all duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(-15deg)] animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
                         <CardHeader className="items-center text-center">
-                            <div className="p-3 bg-accent/10 rounded-full mb-4">
+                            <div className="p-3 bg-primary-foreground/10 rounded-full mb-4">
                                 <ShoppingBag className="h-7 w-7 text-accent" />
                             </div>
                             <CardTitle>Unlimited Products</CardTitle>
                         </CardHeader>
-                        <CardContent className="text-center text-muted-foreground">
+                        <CardContent className="text-center text-primary-foreground/80">
                             Add as many products as you want to your online catalog.
                         </CardContent>
                     </Card>
-                    <Card className="shadow-lg hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(15deg)] animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
+                    <Card className="bg-primary text-primary-foreground shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/60 transition-all duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(15deg)] animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
                         <CardHeader className="items-center text-center">
-                            <div className="p-3 bg-accent/10 rounded-full mb-4">
+                            <div className="p-3 bg-primary-foreground/10 rounded-full mb-4">
                                 <Sparkles className="h-7 w-7 text-accent" />
                             </div>
                             <CardTitle>AI-Powered</CardTitle>
                         </CardHeader>
-                        <CardContent className="text-center text-muted-foreground">
+                        <CardContent className="text-center text-primary-foreground/80">
                             Our AI automatically understands your product details.
                         </CardContent>
                     </Card>
-                    <Card className="shadow-lg hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(15deg)] animate-fade-in-up" style={{ animationDelay: '0.9s' }}>
+                    <Card className="bg-primary text-primary-foreground shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/60 transition-all duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(15deg)] animate-fade-in-up" style={{ animationDelay: '0.9s' }}>
                         <CardHeader className="items-center text-center">
-                            <div className="p-3 bg-accent/10 rounded-full mb-4">
+                            <div className="p-3 bg-primary-foreground/10 rounded-full mb-4">
                                 <Share2 className="h-7 w-7 text-accent" />
                             </div>
                             <CardTitle>Easily Shareable</CardTitle>
                         </CardHeader>
-                        <CardContent className="text-center text-muted-foreground">
+                        <CardContent className="text-center text-primary-foreground/80">
                             A clean, simple link to your store that you can share anywhere.
                         </CardContent>
                     </Card>
