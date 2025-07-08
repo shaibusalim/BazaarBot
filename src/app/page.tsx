@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import Image from "next/image";
 import { Bot, Link as LinkIcon, MessageSquarePlus, Store, Sparkles, Zap, ShoppingBag, Share2, MoveRight } from "lucide-react";
@@ -38,9 +39,9 @@ export default async function Home() {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative overflow-hidden py-24 md:py-32">
+        <section className="relative overflow-hidden py-20 md:py-32">
            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(var(--primary-rgb),0.1),transparent_70%)] -z-10"></div>
-          <div className="container mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-12 items-center">
+          <div className="container mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="animate-fade-in-up">
               <h2 className="text-4xl md:text-6xl font-extrabold font-headline text-foreground tracking-tighter leading-tight">
                 Instantly Turn WhatsApp into Your Online Store.
@@ -48,7 +49,7 @@ export default async function Home() {
               <p className="mt-6 max-w-xl text-lg md:text-xl text-muted-foreground">
                 BazaarBot helps Ghanaian sellers create a beautiful online catalog just by sending a WhatsApp message. No apps, no websites, no fees.
               </p>
-              <div className="mt-8 flex items-center gap-4">
+              <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <Button size="lg" asChild className="shadow-lg shadow-primary/30 transition-all hover:shadow-primary/50 hover:-translate-y-1">
                   <Link href="/233123456789">
                     <Store className="mr-2" /> See a Live Store
