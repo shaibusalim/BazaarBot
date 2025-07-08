@@ -52,7 +52,9 @@ const ExtractedProductDetailsSchema = z.object({
     ),
   description: z
     .string()
-    .describe('A short, clear description of the product.'),
+    .describe(
+      'A short, clear description of the product, based on the photo.'
+    ),
 });
 
 export async function addProductFromMessage(
@@ -63,13 +65,20 @@ export async function addProductFromMessage(
 
 const productExtractorPrompt = ai.definePrompt({
   name: 'productExtractorPrompt',
-  input: {schema: z.object({message: z.string()})},
+  model: 'googleai/gemini-1.5-flash-latest',
+  input: {
+    schema: z.object({
+      message: z.string(),
+      photoDataUri: z.string(),
+    }),
+  },
   output: {schema: ExtractedProductDetailsSchema},
-  prompt: `You are an intelligent assistant that extracts product information from a seller's message.
+  prompt: `You are an intelligent assistant that extracts product information from a seller's message and image.
 The currency is Ghanaian Cedis (₵). If no currency is specified, assume it is ₵.
-Extract the price and a description for the product from the following message.
+Extract the price from the message and create a clear product description based on the provided photo.
 
 Message: {{{message}}}
+Photo: {{media url=photoDataUri}}
 `,
 });
 
@@ -82,6 +91,7 @@ const addProductFlow = ai.defineFlow(
   async input => {
     const {output: extractedDetails} = await productExtractorPrompt({
       message: input.message,
+      photoDataUri: input.photoDataUri,
     });
 
     if (!extractedDetails) {
