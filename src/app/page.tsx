@@ -1,37 +1,47 @@
+'use client'; // This component now uses hooks, so it must be a client component
 
 import Link from "next/link";
 import Image from "next/image";
 import { Bot, Link as LinkIcon, MessageSquarePlus, Store, Sparkles, Zap, ShoppingBag, Share2, MoveRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { generateImage } from "@/ai/flows/generate-image-flow";
+import { useEffect, useState } from "react";
 
-export default async function Home() {
-  let imageDataUri: string;
+export default function Home() {
+  const [imageDataUri, setImageDataUri] = useState<string>("https://placehold.co/500x550.png");
 
-  try {
-    const result = await generateImage({
-      prompt: "A vibrant and professional-looking smartphone screen displaying a mobile e-commerce app. The app shows a grid of colorful, handmade Ghanaian products like Kente cloth and beaded jewelry. The app has a clean, modern design with purple and blue accents. The phone is held by a person, with a blurred background of a bustling Ghanaian market, conveying a sense of local entrepreneurship powered by technology."
-    });
-    imageDataUri = result.imageDataUri;
-  } catch (error) {
-    console.error("AI image generation failed. This may be due to a missing GOOGLE_API_KEY. Using a placeholder. Error:", error);
-    imageDataUri = "https://placehold.co/500x550.png";
-  }
+  useEffect(() => {
+    async function fetchImage() {
+      try {
+        const result = await generateImage({
+          prompt: "A vibrant and professional-looking smartphone screen displaying a mobile e-commerce app. The app shows a grid of colorful, handmade Ghanaian products like Kente cloth and beaded jewelry. The app has a clean, modern design with purple and blue accents. The phone is held by a person, with a blurred background of a bustling Ghanaian market, conveying a sense of local entrepreneurship powered by technology."
+        });
+        setImageDataUri(result.imageDataUri);
+      } catch (error) {
+        console.error("AI image generation failed. This may be due to a missing GOOGLE_API_KEY. Using a placeholder. Error:", error);
+        // The placeholder is already set, so no need to setState here again.
+      }
+    }
+    fetchImage();
+  }, []);
+
 
   return (
     <div className="flex flex-col min-h-screen text-foreground">
       <header className="py-4 px-4 md:px-6 sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
-        <div className="container mx-auto flex items-center justify-between">
+        <div className="container mx-auto flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2">
             <Bot className="text-primary" size={28} />
-            <h1 className="text-2xl font-bold font-headline tracking-tight">
+            <h1 className="text-xl md:text-2xl font-bold font-headline tracking-tight whitespace-nowrap">
               BazaarBot
             </h1>
           </Link>
-          <Button asChild>
+          <Button asChild className="flex-shrink-0">
             <Link href="/233123456789">
-              View Demo Store <MoveRight className="ml-2 h-4 w-4" />
+              <span className="hidden sm:inline">View Demo Store</span>
+              <span className="sm:hidden">Demo</span>
+              <MoveRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
         </div>
@@ -39,11 +49,11 @@ export default async function Home() {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative overflow-hidden py-20 md:py-32">
+        <section className="relative overflow-hidden py-16 md:py-24">
            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(var(--primary-rgb),0.1),transparent_70%)] -z-10"></div>
           <div className="container mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="animate-fade-in-up">
-              <h2 className="text-4xl md:text-6xl font-extrabold font-headline text-foreground tracking-tighter leading-tight">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold font-headline text-foreground tracking-tighter leading-tight">
                 Instantly Turn WhatsApp into Your Online Store.
               </h2>
               <p className="mt-6 max-w-xl text-lg md:text-xl text-muted-foreground">
@@ -119,7 +129,7 @@ export default async function Home() {
                     <h3 className="text-3xl md:text-4xl font-bold font-headline mt-2">Everything You Need to Sell</h3>
                     <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">Powerful features designed to make selling simple and fast.</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     <Card className="hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 transition-all duration-300">
                         <CardHeader className="items-center text-center">
                             <div className="p-3 bg-accent/10 rounded-full mb-4">
