@@ -10,7 +10,7 @@ export default async function Home() {
 
   try {
     const result = await generateImage({
-      prompt: "A vibrant and professional-looking smartphone screen displaying a mobile e-commerce app. The app shows a grid of colorful, handmade Ghanaian products like Kente cloth and beaded jewelry. The app has a clean, modern design with purple and blue accents. The phone is held by a person, with a blurred background of a bustling Ghanaian market, conveying a sense of local entrepreneurship powered by technology."
+      prompt: "A vibrant and professional-looking smartphone screen displaying a mobile e-commerce app. The app shows a grid of colorful, handmade Ghanaian products like Kente cloth and beaded jewelry. The app has a clean, modern design with purple and orange accents. The phone is held by a person, with a blurred background of a bustling Ghanaian market, conveying a sense of local entrepreneurship powered by technology."
     });
     imageDataUri = result.imageDataUri;
   } catch (error) {
@@ -41,7 +41,7 @@ export default async function Home() {
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative overflow-hidden py-24 md:py-32">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background -z-10"></div>
+           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(var(--primary-rgb),0.1),transparent_70%)] -z-10"></div>
           <div className="container mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in-up">
               <h2 className="text-4xl md:text-6xl font-extrabold font-headline text-foreground tracking-tighter leading-tight">
@@ -51,7 +51,7 @@ export default async function Home() {
                 BazaarBot helps Ghanaian sellers create a beautiful online catalog just by sending a WhatsApp message. No apps, no websites, no fees.
               </p>
               <div className="mt-8 flex items-center gap-4">
-                <Button size="lg" asChild className="shadow-lg shadow-primary/30">
+                <Button size="lg" asChild className="shadow-lg shadow-primary/30 transition-all hover:shadow-primary/50 hover:-translate-y-1">
                   <Link href="/233123456789">
                     <Store className="mr-2" /> See a Live Store
                   </Link>
@@ -63,15 +63,17 @@ export default async function Home() {
                 </Button>
               </div>
             </div>
-            <div className="relative animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                <Image
-                  src={imageDataUri}
-                  alt="A phone showing a BazaarBot store"
-                  width={500}
-                  height={550}
-                  className="rounded-xl shadow-2xl transform transition-transform duration-500 hover:scale-105 object-cover"
-                  data-ai-hint="phone store"
-                />
+            <div className="relative animate-fade-in-up [animation-delay:0.2s] [perspective:1000px]">
+                <div className="relative animate-float transition-transform duration-500 [transform-style:preserve-3d] hover:[transform:rotateY(-10deg)_scale(1.05)]">
+                    <Image
+                      src={imageDataUri}
+                      alt="A phone showing a BazaarBot store"
+                      width={500}
+                      height={550}
+                      className="rounded-xl shadow-2xl object-cover"
+                      data-ai-hint="phone store"
+                    />
+                </div>
             </div>
           </div>
         </section>
@@ -85,21 +87,21 @@ export default async function Home() {
               <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">From your phone to a full-fledged store in three simple steps.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center p-8 border border-transparent hover:border-primary/20 hover:bg-card rounded-2xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="text-center p-8 rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:bg-card hover:shadow-2xl hover:shadow-primary/10">
                 <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit mb-6">
                   <MessageSquarePlus size={32} />
                 </div>
                 <h4 className="text-xl font-semibold">1. Send a Message</h4>
                 <p className="text-muted-foreground mt-2">Snap a photo, add a price & description, and send it to our WhatsApp number. That's it.</p>
               </div>
-              <div className="text-center p-8 border border-transparent hover:border-primary/20 hover:bg-card rounded-2xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="text-center p-8 rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:bg-card hover:shadow-2xl hover:shadow-primary/10">
                 <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit mb-6">
                   <LinkIcon size={32} />
                 </div>
                 <h4 className="text-xl font-semibold">2. Get Your Link</h4>
                 <p className="text-muted-foreground mt-2">We instantly create a beautiful, public store page for you and send you the link.</p>
               </div>
-              <div className="text-center p-8 border border-transparent hover:border-primary/20 hover:bg-card rounded-2xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="text-center p-8 rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:bg-card hover:shadow-2xl hover:shadow-primary/10">
                 <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit mb-6">
                   <Share2 size={32} />
                 </div>
@@ -119,10 +121,10 @@ export default async function Home() {
                     <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">Powerful features designed to make selling simple and fast.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <Card className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <Card className="hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 transition-all duration-300">
                         <CardHeader className="items-center text-center">
                             <div className="p-3 bg-accent/10 rounded-full mb-4">
-                                <Zap className="h-7 w-7 text-primary" />
+                                <Zap className="h-7 w-7 text-accent" />
                             </div>
                             <CardTitle>Instant Setup</CardTitle>
                         </CardHeader>
@@ -130,10 +132,10 @@ export default async function Home() {
                             No registration. Your WhatsApp number is your account.
                         </CardContent>
                     </Card>
-                    <Card className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <Card className="hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 transition-all duration-300">
                         <CardHeader className="items-center text-center">
                             <div className="p-3 bg-accent/10 rounded-full mb-4">
-                                <ShoppingBag className="h-7 w-7 text-primary" />
+                                <ShoppingBag className="h-7 w-7 text-accent" />
                             </div>
                             <CardTitle>Unlimited Products</CardTitle>
                         </CardHeader>
@@ -141,10 +143,10 @@ export default async function Home() {
                             Add as many products as you want to your online catalog.
                         </CardContent>
                     </Card>
-                    <Card className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <Card className="hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 transition-all duration-300">
                         <CardHeader className="items-center text-center">
                             <div className="p-3 bg-accent/10 rounded-full mb-4">
-                                <Sparkles className="h-7 w-7 text-primary" />
+                                <Sparkles className="h-7 w-7 text-accent" />
                             </div>
                             <CardTitle>AI-Powered</CardTitle>
                         </CardHeader>
@@ -152,10 +154,10 @@ export default async function Home() {
                             Our AI automatically understands your product details.
                         </CardContent>
                     </Card>
-                    <Card className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <Card className="hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 transition-all duration-300">
                         <CardHeader className="items-center text-center">
                             <div className="p-3 bg-accent/10 rounded-full mb-4">
-                                <Share2 className="h-7 w-7 text-primary" />
+                                <Share2 className="h-7 w-7 text-accent" />
                             </div>
                             <CardTitle>Easily Shareable</CardTitle>
                         </CardHeader>
