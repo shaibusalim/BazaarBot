@@ -10,16 +10,18 @@ import { useEffect, useState } from "react";
 
 interface ProductCardProps {
   product: Product;
+  twilioNumber: string;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, twilioNumber }: ProductCardProps) {
   const [whatsappLink, setWhatsappLink] = useState('');
 
   useEffect(() => {
-    const message = `I want to buy ${product.description} for ${product.price}.`;
+    // A structured message for the bot to parse, including the product ID.
+    const message = `Hi! I'm interested in this product: ${product.description} (ID: ${product.id})`;
     const encodedMessage = encodeURIComponent(message);
-    setWhatsappLink(`https://wa.me/${product.sellerId}?text=${encodedMessage}`);
-  }, [product]);
+    setWhatsappLink(`https://wa.me/${twilioNumber}?text=${encodedMessage}`);
+  }, [product, twilioNumber]);
   
   return (
     <Card className="w-full overflow-hidden flex flex-col transition-all hover:shadow-lg hover:-translate-y-1 duration-300">

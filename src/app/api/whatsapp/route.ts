@@ -1,5 +1,6 @@
 import { addProductFromMessage } from '@/ai/flows/add-product-flow';
 import { autoReply } from '@/ai/flows/auto-reply-system';
+import { getProductById } from '@/lib/mock-data';
 import { NextResponse } from 'next/server';
 import { Twilio } from 'twilio';
 
@@ -45,20 +46,24 @@ async function fetchImageAsDataUri(url: string) {
   }
 }
 
+function parseProductId(message: string): string | null {
+  const match = message.match(/\(ID: (.*?)\)/);
+  return match ? match[1] : null;
+}
+
 async function handleTwilioWebhook(request: Request) {
   const formData = await request.formData();
-  const from = (formData.get('From') as string) || ''; // e.g., "whatsapp:+14155238886"
+  const from = (formData.get('From') as string) || ''; // e.g., "whatsapp:+233123456789"
   const message = (formData.get('Body') as string) || '';
   const mediaUrl = (formData.get('MediaUrl0') as string) || null;
 
-  const sellerId = from.replace('whatsapp:', '');
-
-  if (!sellerId || !message) {
+  if (!from || !message) {
     return new Response('<Response/>', { headers: { 'Content-Type': 'text/xml' } });
   }
 
+  // Case 1: Seller is adding a product (message has an image)
   if (mediaUrl) {
-    // Seller adding a product
+    const sellerId = from.replace('whatsapp:', '');
     const photoDataUri = await fetchImageAsDataUri(mediaUrl);
     if (photoDataUri) {
       const result = await addProductFromMessage({ sellerId, message, photoDataUri });
@@ -70,9 +75,28 @@ async function handleTwilioWebhook(request: Request) {
       );
     }
   } else {
-    // Buyer asking a question
-    const result = await autoReply({ sellerId, message });
-    await sendWhatsappMessage(from, result.reply);
+    const productId = parseProductId(message);
+    // Case 2: Buyer is asking about a specific product
+    if (productId) {
+      const product = await getProductById(productId);
+      if (product) {
+        const result = await autoReply({
+          sellerId: product.sellerId,
+          message: message,
+          productName: product.description,
+          productPrice: product.price,
+        });
+        await sendWhatsappMessage(from, result.reply);
+      } else {
+        await sendWhatsappMessage(from, "Sorry, I couldn't find that product. It might no longer be available.");
+      }
+    } else {
+      // Case 3: Generic message without product context (could be seller or buyer)
+      // Fallback: The AI will respond generically without product specifics.
+      const senderId = from.replace('whatsapp:', '');
+      const result = await autoReply({ sellerId: senderId, message });
+      await sendWhatsappMessage(from, result.reply);
+    }
   }
 
   // Respond to Twilio to acknowledge receipt
@@ -83,6 +107,7 @@ async function handleJsonRequest(request: Request) {
   try {
     const body = await request.json();
     const { sellerId, message, photoDataUri } = body;
+    const fromNumber = `whatsapp:${sellerId}`;
 
     if (!sellerId || !message) {
       return NextResponse.json(
@@ -93,12 +118,31 @@ async function handleJsonRequest(request: Request) {
 
     if (photoDataUri) {
       const result = await addProductFromMessage({ sellerId, message, photoDataUri });
-      await sendWhatsappMessage(`whatsapp:${sellerId}`, result.confirmationMessage);
+      await sendWhatsappMessage(fromNumber, result.confirmationMessage);
       return NextResponse.json(result);
     } else {
-      const result = await autoReply({ sellerId, message });
-      await sendWhatsappMessage(`whatsapp:${sellerId}`, result.reply);
-      return NextResponse.json(result);
+      const productId = parseProductId(message);
+      if (productId) {
+        const product = await getProductById(productId);
+        if (product) {
+          const result = await autoReply({
+            sellerId: product.sellerId,
+            message: message,
+            productName: product.description,
+            productPrice: product.price,
+          });
+          await sendWhatsappMessage(fromNumber, result.reply);
+          return NextResponse.json(result);
+        } else {
+          const result = { reply: "Sorry, I couldn't find that product. It might no longer be available." };
+          await sendWhatsappMessage(fromNumber, result.reply);
+          return NextResponse.json(result);
+        }
+      } else {
+        const result = await autoReply({ sellerId, message });
+        await sendWhatsappMessage(fromNumber, result.reply);
+        return NextResponse.json(result);
+      }
     }
   } catch (error) {
     console.error('Error processing JSON request:', error);

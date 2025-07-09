@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 export default async function SellerPage({ params }: { params: { sellerId: string } }) {
   const products: Product[] = await getProductsBySeller(params.sellerId);
+  const twilioNumber = process.env.TWILIO_WHATSAPP_NUMBER?.replace('whatsapp:', '') || '';
 
   const formattedSellerId = `+${params.sellerId.slice(0, 3)} ${params.sellerId.slice(3, 5)} ${params.sellerId.slice(5, 8)} ${params.sellerId.slice(8)}`;
 
@@ -36,7 +37,7 @@ export default async function SellerPage({ params }: { params: { sellerId: strin
         {products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} twilioNumber={twilioNumber} />
             ))}
           </div>
         ) : (
