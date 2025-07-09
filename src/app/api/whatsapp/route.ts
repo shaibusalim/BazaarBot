@@ -53,53 +53,62 @@ function parseProductId(message: string): string | null {
 
 async function handleTwilioWebhook(request: Request) {
   const formData = await request.formData();
-  const from = (formData.get('From') as string) || ''; // e.g., "whatsapp:+233123456789"
+  const from = (formData.get('From') as string) || '';
   const message = (formData.get('Body') as string) || '';
   const mediaUrl = (formData.get('MediaUrl0') as string) || null;
 
-  if (!from || !message) {
+  if (!from) {
+    // Cannot proceed without a sender. Respond to Twilio and exit.
     return new Response('<Response/>', { headers: { 'Content-Type': 'text/xml' } });
   }
 
-  // Case 1: Seller is adding a product (message has an image)
-  if (mediaUrl) {
-    const sellerId = from.replace('whatsapp:', '');
-    const photoDataUri = await fetchImageAsDataUri(mediaUrl);
-    if (photoDataUri) {
-      const result = await addProductFromMessage({ sellerId, message, photoDataUri });
-      await sendWhatsappMessage(from, result.confirmationMessage);
-    } else {
-      await sendWhatsappMessage(
-        from,
-        'Sorry, I had trouble processing the image. Please try sending it again.'
-      );
-    }
-  } else {
-    const productId = parseProductId(message);
-    // Case 2: Buyer is asking about a specific product
-    if (productId) {
-      const product = await getProductById(productId);
-      if (product) {
-        const result = await autoReply({
-          sellerId: product.sellerId,
-          message: message,
-          productName: product.description,
-          productPrice: product.price,
-        });
-        await sendWhatsappMessage(from, result.reply);
+  try {
+    // Case 1: Seller is adding a product (message has an image)
+    if (mediaUrl) {
+      const sellerId = from.replace('whatsapp:', '');
+      const photoDataUri = await fetchImageAsDataUri(mediaUrl);
+      if (photoDataUri) {
+        const result = await addProductFromMessage({ sellerId, message, photoDataUri });
+        await sendWhatsappMessage(from, result.confirmationMessage);
       } else {
-        await sendWhatsappMessage(from, "Sorry, I couldn't find that product. It might no longer be available.");
+        await sendWhatsappMessage(
+          from,
+          'Sorry, I had trouble processing the image. Please try sending it again.'
+        );
       }
     } else {
-      // Case 3: Generic message without product context (could be seller or buyer)
-      // Fallback: The AI will respond generically without product specifics.
-      const senderId = from.replace('whatsapp:', '');
-      const result = await autoReply({ sellerId: senderId, message });
-      await sendWhatsappMessage(from, result.reply);
+      const productId = parseProductId(message);
+      // Case 2: Buyer is asking about a specific product
+      if (productId) {
+        const product = await getProductById(productId);
+        if (product) {
+          const result = await autoReply({
+            sellerId: product.sellerId,
+            message: message,
+            productName: product.description,
+            productPrice: product.price,
+          });
+          await sendWhatsappMessage(from, result.reply);
+        } else {
+          await sendWhatsappMessage(from, "Sorry, I couldn't find that product. It might no longer be available.");
+        }
+      } else {
+        // Case 3: Generic message without product context (could be seller or buyer)
+        // Fallback: The AI will respond generically without product specifics.
+        const senderId = from.replace('whatsapp:', '');
+        const result = await autoReply({ sellerId: senderId, message });
+        await sendWhatsappMessage(from, result.reply);
+      }
     }
+  } catch (error) {
+    console.error('Webhook Error:', error);
+    await sendWhatsappMessage(
+      from, 
+      "I'm sorry, but something went wrong while processing your request. Please try again in a moment."
+    );
   }
 
-  // Respond to Twilio to acknowledge receipt
+  // Respond to Twilio to acknowledge receipt, even if there was an error
   return new Response('<Response/>', { headers: { 'Content-Type': 'text/xml' } });
 }
 
