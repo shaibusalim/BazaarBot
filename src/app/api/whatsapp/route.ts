@@ -31,10 +31,19 @@ async function sendWhatsappMessage(to: string, body: string) {
 }
 
 async function fetchImageAsDataUri(url: string) {
+  if (!accountSid || !authToken) {
+    console.error('Twilio credentials (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN) are not configured. Cannot fetch media.');
+    return null;
+  }
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': 'Basic ' + Buffer.from(`${accountSid}:${authToken}`).toString('base64'),
+      },
+    });
+    
     if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.statusText}`);
+      throw new Error(`Failed to fetch image: ${response.statusText} (${response.status})`);
     }
     const contentType = response.headers.get('content-type') || 'image/jpeg';
     const buffer = await response.arrayBuffer();
@@ -101,7 +110,18 @@ async function handleTwilioWebhook(request: Request) {
       }
     }
   } catch (error) {
-    console.error('Webhook Error:', error);
+    console.error('--- BazaarBot Webhook Error ---');
+    console.error('An error occurred while processing a WhatsApp message.');
+    console.error('Timestamp:', new Date().toISOString());
+    console.error('Sender:', from);
+    console.error('Message Body:', message);
+    console.error('Error Details:', error);
+
+    // Check if the error might be related to Firestore DB connection
+    if (error instanceof Error && (error.message.includes('database') || error.message.includes('Firestore') || error.message.includes('credential'))) {
+       console.error('\nHint: This error might be due to a missing or incorrect FIREBASE_SERVICE_ACCOUNT_BASE64 environment variable. Please ensure your .env file is correctly configured.\n');
+    }
+
     await sendWhatsappMessage(
       from, 
       "I'm sorry, but something went wrong while processing your request. Please try again in a moment."
