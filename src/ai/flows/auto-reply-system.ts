@@ -30,6 +30,7 @@ export async function autoReply(input: AutoReplyInput): Promise<AutoReplyOutput>
 
 const autoReplyPrompt = ai.definePrompt({
   name: 'autoReplyPrompt',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: AutoReplyInputSchema},
   output: {schema: AutoReplyOutputSchema},
   prompt: `You are a Ghanaian shop assistant. Be polite and concise. Your goal is to answer customer questions based on the information provided.

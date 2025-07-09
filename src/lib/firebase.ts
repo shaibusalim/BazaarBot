@@ -30,3 +30,4 @@ try {
 }
 
 export { db };
+export const FieldValue = admin.firestore.FieldValue;

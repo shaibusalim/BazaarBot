@@ -1,6 +1,5 @@
 import type { Product } from '@/types';
-import * as admin from 'firebase-admin';
-import { db } from '@/lib/firebase';
+import { db, FieldValue } from '@/lib/firebase';
 
 export async function getProductsBySeller(sellerId: string): Promise<Product[]> {
   if (!db) {
@@ -78,7 +77,7 @@ export async function addProduct(productData: Omit<Product, 'id' | 'createdAt'>)
 
     const newProductDoc = {
       ...productData,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     };
     const docRef = await productsCollection.add(newProductDoc);
 
