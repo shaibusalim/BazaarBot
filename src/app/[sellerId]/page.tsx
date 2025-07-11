@@ -5,10 +5,11 @@ import { Bot, Store } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function SellerPage({ params }: { params: { sellerId: string } }) {
-  const products: Product[] = await getProductsBySeller(params.sellerId);
+  const { sellerId } = params; // Destructure params immediately
+  const products: Product[] = await getProductsBySeller(sellerId);
   const twilioNumber = process.env.TWILIO_WHATSAPP_NUMBER?.replace('whatsapp:', '') || '';
 
-  const formattedSellerId = `+${params.sellerId.slice(0, 3)} ${params.sellerId.slice(3, 5)} ${params.sellerId.slice(5, 8)} ${params.sellerId.slice(8)}`;
+  const formattedSellerId = `+${sellerId.slice(0, 3)} ${sellerId.slice(3, 5)} ${sellerId.slice(5, 8)} ${sellerId.slice(8)}`;
 
   return (
     <div className="bg-background min-h-screen flex flex-col">
