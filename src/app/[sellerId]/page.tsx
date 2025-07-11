@@ -1,5 +1,5 @@
 import { ProductCard } from '@/components/product-card';
-import { getProductsBySeller } from '@/lib/mock-data';
+import { getProductsBySeller } from '@/lib/data';
 import type { Product } from '@/types';
 import { Bot, Store } from 'lucide-react';
 import Link from 'next/link';

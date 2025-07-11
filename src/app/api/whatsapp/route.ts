@@ -1,6 +1,6 @@
 import { addProductFromMessage } from '@/ai/flows/add-product-flow';
 import { autoReply } from '@/ai/flows/auto-reply-system';
-import { getProductById } from '@/lib/mock-data';
+import { getProductById } from '@/lib/data';
 import { NextResponse } from 'next/server';
 import { Twilio } from 'twilio';
 

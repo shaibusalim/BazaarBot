@@ -8,7 +8,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {addProduct as addProductToDb} from '@/lib/mock-data';
+import {addProduct as addProductToDb} from '@/lib/data';
 import type {Product} from '@/types';
 import {z} from 'genkit';
 

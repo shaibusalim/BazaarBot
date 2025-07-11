@@ -1,3 +1,4 @@
+
 import type { Product } from '@/types';
 import { db, FieldValue } from '@/lib/firebase';
 
