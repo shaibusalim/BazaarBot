@@ -1,6 +1,6 @@
-
 import type { Product } from '@/types';
 import { db, FieldValue } from '@/lib/firebase';
+import type { QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore';
 
 export async function getProductsBySeller(sellerId: string): Promise<Product[]> {
   if (!db) {
@@ -19,7 +19,7 @@ export async function getProductsBySeller(sellerId: string): Promise<Product[]> 
       return [];
     }
 
-    return snapshot.docs.map(doc => {
+    return snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -32,7 +32,6 @@ export async function getProductsBySeller(sellerId: string): Promise<Product[]> 
     }) as Product[];
   } catch (error) {
     console.error("Error getting products by seller:", error);
-    // Gracefully fail by returning an empty array if DB connection fails.
     return [];
   }
 }
@@ -68,7 +67,7 @@ export async function getProductById(productId: string): Promise<Product | null>
 }
 
 export async function addProduct(productData: Omit<Product, 'id' | 'createdAt'>): Promise<Product> {
-  if (!db) {
+  if (!db || !FieldValue) {
     console.error("Firestore not initialized, cannot add product. Check Firebase credentials.");
     throw new Error("Failed to add product to the database because it is not connected.");
   }
