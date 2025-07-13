@@ -23,6 +23,7 @@ const initializeFirebaseAdmin = () => {
       serviceAccountBase64,
       'base64'
     ).toString('utf-8');
+    
     const credentials = JSON.parse(serviceAccountJson) as ServiceAccount;
 
     return admin.initializeApp({
@@ -30,6 +31,9 @@ const initializeFirebaseAdmin = () => {
     });
   } catch (error) {
     console.error('Firebase Admin Initialization Error:', error);
+    if (error instanceof SyntaxError) {
+        console.error('\nHint: The FIREBASE_SERVICE_ACCOUNT_BASE64 string seems to be corrupted or invalid. Please re-generate it from your service account JSON file and ensure it is copied correctly into your environment variables.\n');
+    }
     return null;
   }
 };
