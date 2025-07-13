@@ -15,8 +15,8 @@ const client =
 
 async function sendWhatsappMessage(to: string, body: string) {
   if (!client || !twilioNumber) {
-    console.log(
-      `Twilio not configured. Message to ${to} with body "${body}" was not sent.`
+    console.error(
+      `Twilio client not configured. Message to ${to} with body "${body}" was not sent.`
     );
     return;
   }
@@ -27,7 +27,8 @@ async function sendWhatsappMessage(to: string, body: string) {
       body: body,
     });
   } catch (error) {
-    console.error(`Error sending message to ${to}:`, error);
+    console.error(`Error sending Twilio message to ${to}:`, error);
+    // Don't re-throw, as this would prevent the original Twilio webhook from getting a response.
   }
 }
 
@@ -62,70 +63,91 @@ function parseProductId(message: string): string | null {
 }
 
 async function handleTwilioWebhook(request: Request) {
+  console.log('--- New Twilio Webhook Request ---');
   const formData = await request.formData();
   const from = (formData.get('From') as string) || '';
   const message = (formData.get('Body') as string) || '';
   const mediaUrl = (formData.get('MediaUrl0') as string) || null;
+  const numMedia = parseInt((formData.get('NumMedia') as string) || '0');
+
+  console.log(`From: ${from}, Message: "${message}", NumMedia: ${numMedia}`);
 
   if (!from) {
+    console.error('Webhook received but "From" number is missing. Aborting.');
     // Cannot proceed without a sender. Respond to Twilio and exit.
     return new Response('<Response/>', { headers: { 'Content-Type': 'text/xml' } });
   }
 
   try {
     // Case 1: Seller is adding a product (message has an image)
-    if (mediaUrl) {
+    if (mediaUrl && numMedia > 0) {
+      console.log('Processing as "Add Product" request...');
       const sellerId = from.replace('whatsapp:', '');
       const photoDataUri = await fetchImageAsDataUri(mediaUrl);
       if (photoDataUri) {
+        console.log('Image fetched successfully. Calling addProductFromMessage AI flow...');
         const result = await addProductFromMessage({ sellerId, message, photoDataUri });
+        console.log('AI response received:', result.confirmationMessage);
         await sendWhatsappMessage(from, result.confirmationMessage);
       } else {
+        console.error('Failed to fetch image data URI.');
         await sendWhatsappMessage(
           from,
           'Sorry, I had trouble processing the image. Please try sending it again.'
         );
       }
     } else {
+      console.log('Processing as text-only request...');
       const productId = parseProductId(message);
       // Case 2: Buyer is asking about a specific product
       if (productId) {
+        console.log(`Parsed Product ID: ${productId}. Looking up product...`);
         const product = await getProductById(productId);
         if (product) {
+          console.log('Product found. Calling autoReply AI flow with product context...');
           const result = await autoReply({
             sellerId: product.sellerId,
             message: message,
             productName: product.description,
             productPrice: product.price,
           });
+          console.log('AI response received:', result.reply);
           await sendWhatsappMessage(from, result.reply);
         } else {
+          console.warn(`Product with ID ${productId} not found.`);
           await sendWhatsappMessage(from, "Sorry, I couldn't find that product. It might no longer be available.");
         }
       } else {
-        // Case 3: Generic message without product context (could be seller or buyer)
-        // Fallback: The AI will respond generically without product specifics.
+        // Case 3: Generic message without product context
+        console.log('No Product ID found. Calling autoReply AI flow without product context...');
         const senderId = from.replace('whatsapp:', '');
         const result = await autoReply({ sellerId: senderId, message });
+        console.log('AI response received:', result.reply);
         await sendWhatsappMessage(from, result.reply);
       }
     }
   } catch (error) {
-    console.error('--- BazaarBot Webhook Error ---');
-    console.error('An error occurred while processing a WhatsApp message.');
+    console.error('--- BazaarBot Webhook CRITICAL ERROR ---');
+    console.error('An unhandled error occurred while processing a WhatsApp message.');
     console.error('Timestamp:', new Date().toISOString());
     console.error('Sender:', from);
     console.error('Message Body:', message);
-    console.error('Error Details:', error);
+    console.error('Full Error Details:', error);
 
-    // Check if the error might be related to Firestore DB connection
-    if (error instanceof Error && (error.message.includes('database') || error.message.includes('Firestore') || error.message.includes('credential'))) {
-       console.error('\nHint: This error might be due to a missing or incorrect FIREBASE_SERVICE_ACCOUNT_BASE64 environment variable. Please ensure your .env file is correctly configured.\n');
+    // Check if the error might be related to Firestore or API keys
+    if (error instanceof Error) {
+        if (error.message.includes('database') || error.message.includes('Firestore') || error.message.includes('credential')) {
+            console.error('\nHint: This error might be due to a missing or incorrect FIREBASE_SERVICE_ACCOUNT_BASE64 environment variable.\n');
+        }
+        if (error.message.includes('API key')) {
+             console.error('\nHint: This error might be due to a missing or invalid GOOGLE_API_KEY environment variable.\n');
+        }
     }
-
+    
+    // Send a generic failsafe message to the user
     await sendWhatsappMessage(
       from, 
-      "I'm sorry, but something went wrong while processing your request. Please try again in a moment."
+      "I'm sorry, but something went wrong on our end and I couldn't process your request. Please try again in a moment."
     );
   }
 
@@ -133,6 +155,7 @@ async function handleTwilioWebhook(request: Request) {
   return new Response('<Response/>', { headers: { 'Content-Type': 'text/xml' } });
 }
 
+// This function is primarily for the simulator page, not the Twilio webhook
 async function handleJsonRequest(request: Request) {
   try {
     const body = await request.json();
@@ -192,3 +215,5 @@ export async function POST(request: Request) {
     return handleJsonRequest(request);
   }
 }
+
+    
