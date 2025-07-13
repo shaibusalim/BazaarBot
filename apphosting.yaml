@@ -5,3 +5,17 @@ runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
   maxInstances: 1
+  # The following environment variables are required for the application to run.
+  # You must set these as secrets in your App Hosting backend configuration.
+  # firebase apphosting:backends:update --backend=<your-backend-id> --update-secrets=...
+  environmentVariables:
+    - variable: TWILIO_ACCOUNT_SID
+      secret: TWILIO_ACCOUNT_SID
+    - variable: TWILIO_AUTH_TOKEN
+      secret: TWILIO_AUTH_TOKEN
+    - variable: TWILIO_WHATSAPP_NUMBER
+      secret: TWILIO_WHATSAPP_NUMBER
+    - variable: FIREBASE_SERVICE_ACCOUNT_BASE64
+      secret: FIREBASE_SERVICE_ACCOUNT_BASE64
+    - variable: GOOGLE_API_KEY
+      secret: GOOGLE_API_KEY
