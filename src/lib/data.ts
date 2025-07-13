@@ -10,6 +10,8 @@ export async function getProductsBySeller(sellerId: string): Promise<Product[]> 
 
   try {
     const productsCollection = db.collection('products');
+    // NOTE: This query requires a composite index in Firestore.
+    // The error message from Firestore will contain a direct link to create it.
     const snapshot = await productsCollection
       .where('sellerId', '==', sellerId)
       .orderBy('createdAt', 'desc')
@@ -32,6 +34,7 @@ export async function getProductsBySeller(sellerId: string): Promise<Product[]> 
     }) as Product[];
   } catch (error) {
     console.error("Error getting products by seller:", error);
+    // In a real app, you might want to throw the error to be handled by the caller
     return [];
   }
 }
@@ -69,7 +72,7 @@ export async function getProductById(productId: string): Promise<Product | null>
 export async function addProduct(productData: Omit<Product, 'id' | 'createdAt'>): Promise<Product> {
   if (!db || !FieldValue) {
     console.error("Firestore not initialized, cannot add product. Check Firebase credentials.");
-    throw new Error("Failed to add product to the database because it is not connected.");
+    throw new Error("Database not connected. Failed to add product.");
   }
   
   try {
@@ -81,13 +84,14 @@ export async function addProduct(productData: Omit<Product, 'id' | 'createdAt'>)
     };
     const docRef = await productsCollection.add(newProductDoc);
 
+    // Fetch the just-created document to get the server-generated timestamp
     const doc = await docRef.get();
     const data = doc.data();
 
     return {
       id: doc.id,
       ...productData,
-      createdAt: data?.createdAt.toDate(),
+      createdAt: data?.createdAt.toDate(), // Return a JS Date object
     } as Product;
     
   } catch (error) {

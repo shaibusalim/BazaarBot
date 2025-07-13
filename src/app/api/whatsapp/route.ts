@@ -153,65 +153,12 @@ async function handleTwilioWebhook(request: Request) {
   return new Response('<Response/>', { headers: { 'Content-Type': 'text/xml' } });
 }
 
-// This function is primarily for the simulator page, not the Twilio webhook
-async function handleJsonRequest(request: Request) {
-  try {
-    const body = await request.json();
-    const { sellerId, message, photoDataUri } = body;
-    const fromNumber = `whatsapp:${sellerId}`;
-
-    if (!sellerId || !message) {
-      return NextResponse.json(
-        { error: 'Missing required fields: sellerId and message' },
-        { status: 400 }
-      );
-    }
-
-    if (photoDataUri) {
-      const result = await addProductFromMessage({ sellerId, message, photoDataUri });
-      await sendWhatsappMessage(fromNumber, result.confirmationMessage);
-      return NextResponse.json(result);
-    } else {
-      const productId = parseProductId(message);
-      if (productId) {
-        const product = await getProductById(productId);
-        if (product) {
-          const result = await autoReply({
-            sellerId: product.sellerId,
-            message: message,
-            productName: product.description,
-            productPrice: product.price,
-          });
-          await sendWhatsappMessage(fromNumber, result.reply);
-          return NextResponse.json(result);
-        } else {
-          const result = { reply: "Sorry, I couldn't find that product. It might no longer be available." };
-          await sendWhatsappMessage(fromNumber, result.reply);
-          return NextResponse.json(result);
-        }
-      } else {
-        const result = await autoReply({ sellerId, message });
-        await sendWhatsappMessage(fromNumber, result.reply);
-        return NextResponse.json(result);
-      }
-    }
-  } catch (error) {
-    console.error('Error processing JSON request:', error);
-    return NextResponse.json(
-      { error: 'An internal server error occurred.' },
-      { status: 500 }
-    );
-  }
-}
-
 export async function POST(request: Request) {
   const contentType = request.headers.get('Content-Type') || '';
   if (contentType.includes('application/x-www-form-urlencoded')) {
     return handleTwilioWebhook(request);
   } else {
-    // Default to handling JSON for testing via simulator
-    return handleJsonRequest(request);
+    // This route is primarily for Twilio, but we can have a JSON fallback for testing.
+    return NextResponse.json({ error: 'This endpoint is designed for Twilio webhooks (x-www-form-urlencoded).' }, { status: 405 });
   }
 }
-
-    

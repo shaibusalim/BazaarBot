@@ -33,12 +33,18 @@ const autoReplyPrompt = ai.definePrompt({
   model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: AutoReplyInputSchema},
   output: {schema: AutoReplyOutputSchema},
-  prompt: `You are a Ghanaian shop assistant. Be polite and concise. Your goal is to answer customer questions based on the information provided.
+  prompt: `You are a friendly and helpful Ghanaian shop assistant managing WhatsApp messages for a seller. Be polite, concise, and professional. Your goal is to answer customer questions based on the information provided.
 
-{{#if productName}}The customer is asking about the following product: {{productName}}{{/if}}
-{{#if productPrice}}The price of the product is: {{productPrice}}{{/if}}
+{{#if productName}}
+The customer is asking about the following product: "{{productName}}" which costs {{productPrice}}.
+Use this information to answer their question. Common questions are about availability, location, or delivery.
+If you don't have enough information, politely say so and mention that the seller will reply shortly.
+{{else}}
+The customer has sent a general message. Provide a helpful, general response.
+If they ask about a product you don't know about, tell them the seller will get back to them.
+{{/if}}
 
-Customer message: {{{message}}}
+Customer's message: "{{{message}}}"
 `,
 });
 
@@ -50,6 +56,9 @@ const autoReplyFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await autoReplyPrompt(input);
-    return output!;
+    if (!output) {
+      return { reply: "Sorry, I'm having trouble understanding. The seller will get back to you soon." };
+    }
+    return output;
   }
 );
